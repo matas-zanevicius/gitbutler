@@ -321,7 +321,13 @@ export const useNavigationIndexHotkeys = <T>({
 
 	const outlineMode = useAppSelector((state) => selectProjectOutlineModeState(state, projectId));
 
-	const enterTransferMode = (source: Operand, operationType: OperationType) => {
+	const operationEnabled = outlineMode._tag === "Default" && selection !== null;
+
+	const enterTransferModeForSelection = (operationType: OperationType) => {
+		if (selection === null) return;
+
+		const source = operationSourceForItem(selection);
+
 		dispatch(
 			projectActions.enterTransferMode({
 				projectId,
@@ -332,14 +338,6 @@ export const useNavigationIndexHotkeys = <T>({
 			}),
 		);
 		focusSelectionScope("outline");
-	};
-
-	const operationEnabled = outlineMode._tag === "Default" && selection !== null;
-
-	const enterTransferModeForSelection = (operationType: OperationType) => {
-		if (selection === null) return;
-
-		enterTransferMode(operationSourceForItem(selection), operationType);
 	};
 
 	useHotkeys([
