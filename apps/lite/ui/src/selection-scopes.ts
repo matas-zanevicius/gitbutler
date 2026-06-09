@@ -332,7 +332,7 @@ export const useNavigationIndexHotkeys = <T>({
 			projectActions.enterTransferMode({
 				projectId,
 				mode: keyboardTransferOperationMode({
-					source,
+					sources: [source],
 					operationType,
 				}),
 			}),

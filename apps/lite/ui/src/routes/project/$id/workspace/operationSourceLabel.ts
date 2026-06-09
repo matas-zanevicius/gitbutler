@@ -6,14 +6,25 @@ import { Operand } from "#ui/operands.ts";
 import { formatHunkHeader } from "#ui/hunk.ts";
 import { assert } from "#ui/assert.ts";
 
+const numberFormat = new Intl.NumberFormat();
+const pluralRules = new Intl.PluralRules();
+
 export const operationSourceLabel = ({
-	source,
+	sources,
 	headInfo,
 }: {
-	source: Operand;
+	sources: Array<Operand>;
 	headInfo: RefInfo;
-}) =>
-	Match.value(source).pipe(
+}) => {
+	if (sources.length !== 1)
+		return `${numberFormat.format(sources.length)} ${
+			pluralRules.select(sources.length) === "one" ? "item" : "items"
+		}`;
+
+	// oxlint-disable-next-line typescript/no-non-null-assertion
+	const source = sources[0]!;
+
+	return Match.value(source).pipe(
 		Match.tagsExhaustive({
 			Branch: ({ branchRef }) => {
 				const segment = findSegmentByBranchRef({ headInfo, branchRef });
@@ -31,3 +42,4 @@ export const operationSourceLabel = ({
 			Hunk: ({ hunkHeader }) => `Hunk ${formatHunkHeader(hunkHeader)}`,
 		}),
 	);
+};
